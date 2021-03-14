@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -e
+
+rm -f dosbox-ece*
+rm -Rf fsbuild/_build
+
+echo "Downloading DOSBox ECE r4441 (source).7z..."
+URL="https://dosboxece.yesterplay.net/download/DOSBox ECE r4441 (source).7z"
+SHA256=76fa1b304a48b634d7d40d885f5f0f58e9e164010baef23370a2e896fddfeab9
+python3 fsbuild/download.py "$URL" sha256:$SHA256
+
+echo "Extracting DOSBox ECE r4441 (source).7z..."
+mkdir -p fsbuild/_build
+cd fsbuild/_build
+mkdir dosbox-ece-src
+cd dosbox-ece-src
+7z x ../../_sources/"DOSBox ECE r4441 (source).7z"
+
+# echo "Applying patches..."
+# cd dosbox-ece-src
+# patch -p1 < ../../../825f66ab24d2991a532d1b3c002854799d75ea3f.patch
+# cd ..
+
+echo "Running autogen.sh..."
+chmod a+x autogen.sh
+dos2unix autogen.sh
+./autogen.sh
+
+echo "Bootstrap done"
